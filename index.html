@@ -388,6 +388,12 @@
             background: #fff3cd;
             border-radius: 6px;
         }
+        #estado-guardado.registrado {
+            padding: 10px;
+            color: #20784a;
+            background: #dff7e9;
+            border-radius: 6px;
+        }
         #ubicacion-confirmada {
             display: none;
             margin-top: 15px;
@@ -748,38 +754,26 @@
          * 2. Pega abajo la URL terminada en /exec que entrega Google Apps Script.
          */
         const urlRegistro = 'https://script.google.com/macros/s/AKfycbxlQZq25zab99rXXPUmDmxfdO69sdSr7tU_g7Z8JI7OuIeL_EE4w_eGzlMZBv7UD21--Q/exec';
+        const claveConfirmacion = 'confirmacionCumpleanos30';
+        const formulario = document.getElementById('formulario-confirmacion');
+        const mensajeExito = document.getElementById('mensaje-exito');
         const acompanantes = document.getElementById('acompanantes');
+        const textoConfirmacion = document.getElementById('texto-confirmacion');
+        const estadoGuardado = document.getElementById('estado-guardado');
+        const ubicacionConfirmada = document.getElementById('ubicacion-confirmada');
+        const regalosConfirmados = document.getElementById('regalos-confirmados');
 
-        document.getElementById('restar-acompanante').addEventListener('click', function() {
-            acompanantes.value = Math.max(0, Number(acompanantes.value) - 1);
-        });
+        function mostrarRespuesta(asistira, respuestaAnterior) {
+            formulario.style.display = 'none';
+            mensajeExito.style.display = 'block';
 
-        document.getElementById('sumar-acompanante').addEventListener('click', function() {
-            acompanantes.value = Math.min(10, Number(acompanantes.value) + 1);
-        });
-
-        document.getElementById('formulario-confirmacion').addEventListener('submit', function(evento) {
-            evento.preventDefault();
-
-            const registroConfigurado = !urlRegistro.includes('PEGA_AQUI');
-            const asistira = document.querySelector('input[name="asistencia"]:checked').value === 'Si, asistire';
-            const textoConfirmacion = document.getElementById('texto-confirmacion');
-            const estadoGuardado = document.getElementById('estado-guardado');
-            const ubicacionConfirmada = document.getElementById('ubicacion-confirmada');
-            const regalosConfirmados = document.getElementById('regalos-confirmados');
-
-            if (registroConfigurado) {
-                this.action = urlRegistro;
-                this.submit();
-                estadoGuardado.classList.remove('pendiente');
-                estadoGuardado.textContent = 'Tu respuesta fue enviada para guardarse en la lista de invitados.';
+            if (respuestaAnterior) {
+                estadoGuardado.classList.add('registrado');
+                estadoGuardado.textContent = 'Ya registraste tu respuesta. ¡Gracias!';
             } else {
-                estadoGuardado.classList.add('pendiente');
-                estadoGuardado.textContent = 'Modo de prueba: falta conectar Google Sheets para guardar esta respuesta.';
+                estadoGuardado.classList.remove('registrado');
             }
 
-            this.style.display = 'none';
-            document.getElementById('mensaje-exito').style.display = 'block';
             if (asistira) {
                 textoConfirmacion.textContent = '¡Qué alegría que puedas venir! Aquí tienes la ubicación:';
                 ubicacionConfirmada.style.display = 'block';
@@ -789,6 +783,47 @@
                 ubicacionConfirmada.style.display = 'none';
                 regalosConfirmados.style.display = 'none';
             }
+        }
+
+        try {
+            const respuestaGuardada = JSON.parse(localStorage.getItem(claveConfirmacion));
+            if (respuestaGuardada && typeof respuestaGuardada.asistira === 'boolean') {
+                mostrarRespuesta(respuestaGuardada.asistira, true);
+            }
+        } catch (error) {
+            // Algunos navegadores pueden desactivar el almacenamiento local.
+        }
+
+        document.getElementById('restar-acompanante').addEventListener('click', function() {
+            acompanantes.value = Math.max(0, Number(acompanantes.value) - 1);
+        });
+
+        document.getElementById('sumar-acompanante').addEventListener('click', function() {
+            acompanantes.value = Math.min(10, Number(acompanantes.value) + 1);
+        });
+
+        formulario.addEventListener('submit', function(evento) {
+            evento.preventDefault();
+
+            const registroConfigurado = !urlRegistro.includes('PEGA_AQUI');
+            const asistira = document.querySelector('input[name="asistencia"]:checked').value === 'Si, asistire';
+
+            if (registroConfigurado) {
+                this.action = urlRegistro;
+                this.submit();
+                try {
+                    localStorage.setItem(claveConfirmacion, JSON.stringify({ asistira: asistira }));
+                } catch (error) {
+                    // La confirmacion igualmente fue enviada aunque el navegador no guarde memoria local.
+                }
+                estadoGuardado.classList.remove('pendiente');
+                estadoGuardado.textContent = 'Tu respuesta fue enviada para guardarse en la lista de invitados.';
+            } else {
+                estadoGuardado.classList.add('pendiente');
+                estadoGuardado.textContent = 'Modo de prueba: falta conectar Google Sheets para guardar esta respuesta.';
+            }
+
+            mostrarRespuesta(asistira, false);
 
             if (asistira) {
                 const colores = ['#ff6b6b', '#feca57', '#4ecdc4', '#54a0ff', '#ff9ff3'];
