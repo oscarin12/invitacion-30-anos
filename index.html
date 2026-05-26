@@ -154,6 +154,62 @@
             font-size: 1em;
             line-height: 1.42;
         }
+        .cuenta-regresiva {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 15px;
+            padding: 11px 8px 9px;
+            border-radius: 14px;
+            background-color: rgba(121, 40, 39, 0.16);
+        }
+        .cuenta-titulo {
+            margin: 0 0 8px;
+            color: #ffffff;
+            font-size: 0.73em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .tiempo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .tiempo div {
+            padding: 7px 2px 6px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.94);
+            color: #ff6b6b;
+            animation: pulsoReloj 2.4s ease-in-out infinite;
+        }
+        .tiempo div:nth-child(2) {
+            animation-delay: -0.4s;
+        }
+        .tiempo div:nth-child(3) {
+            animation-delay: -0.8s;
+        }
+        .tiempo div:nth-child(4) {
+            animation-delay: -1.2s;
+        }
+        .tiempo strong {
+            display: block;
+            font-size: 1.35em;
+            line-height: 1;
+        }
+        .tiempo span {
+            display: block;
+            margin-top: 4px;
+            color: #826b70;
+            font-size: 0.63em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .fiesta-comenzo {
+            margin: 0;
+            padding: 12px 5px;
+            color: #ffffff;
+            font-weight: bold;
+        }
         .detalles {
             position: relative;
             z-index: 1;
@@ -543,6 +599,10 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
+        @keyframes pulsoReloj {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.025); }
+        }
         @media (max-width: 520px) {
             body {
                 display: block;
@@ -584,6 +644,28 @@
                 margin: 0 5px 12px;
                 font-size: 0.9em;
                 line-height: 1.38;
+            }
+            .cuenta-regresiva {
+                margin-bottom: 10px;
+                padding: 8px 5px 7px;
+                border-radius: 11px;
+            }
+            .cuenta-titulo {
+                margin-bottom: 6px;
+                font-size: 0.62em;
+            }
+            .tiempo {
+                gap: 4px;
+            }
+            .tiempo div {
+                padding: 6px 1px 5px;
+                border-radius: 8px;
+            }
+            .tiempo strong {
+                font-size: 1.12em;
+            }
+            .tiempo span {
+                font-size: 0.55em;
             }
             .detalles {
                 gap: 5px;
@@ -700,9 +782,19 @@
                 <div><strong>30</strong><span>años</span></div>
             </div>
             <p class="mensaje">Una noche para brindar, reír y crear recuerdos contigo.</p>
+            <div class="cuenta-regresiva" aria-live="polite">
+                <p class="cuenta-titulo">Falta para el gran día</p>
+                <div class="tiempo" id="tiempo-restante">
+                    <div><strong id="dias">00</strong><span>Días</span></div>
+                    <div><strong id="horas">00</strong><span>Horas</span></div>
+                    <div><strong id="minutos">00</strong><span>Min</span></div>
+                    <div><strong id="segundos">00</strong><span>Seg</span></div>
+                </div>
+                <p class="fiesta-comenzo" id="fiesta-comenzo" hidden>¡Llegó el momento de celebrar! 🎉</p>
+            </div>
 
             <div class="detalles">
-                <p><span class="icono">📅</span><strong>Jueves</strong>6 de Junio</p>
+                <p><span class="icono">📅</span><strong>Sábado</strong>6 de Junio</p>
                 <p><span class="icono">⏰</span><strong>18:30</strong>hrs</p>
                 <p><span class="icono">📍</span><strong>Temuco</strong>Chile</p>
             </div>
@@ -784,6 +876,32 @@
         const botonEnviar = formulario.querySelector('.enviar-confirmacion');
         const tituloFormulario = formulario.querySelector('h3');
         let respuestaGuardada = null;
+        const fechaCelebracion = new Date('2026-06-06T18:30:00-04:00').getTime();
+        const reloj = document.getElementById('tiempo-restante');
+        const mensajeFiesta = document.getElementById('fiesta-comenzo');
+
+        function actualizarCuentaRegresiva() {
+            const diferencia = fechaCelebracion - Date.now();
+
+            if (diferencia <= 0) {
+                reloj.hidden = true;
+                mensajeFiesta.hidden = false;
+                return;
+            }
+
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+            const minutos = Math.floor((diferencia / (1000 * 60)) % 60);
+            const segundos = Math.floor((diferencia / 1000) % 60);
+
+            document.getElementById('dias').textContent = String(dias).padStart(2, '0');
+            document.getElementById('horas').textContent = String(horas).padStart(2, '0');
+            document.getElementById('minutos').textContent = String(minutos).padStart(2, '0');
+            document.getElementById('segundos').textContent = String(segundos).padStart(2, '0');
+        }
+
+        actualizarCuentaRegresiva();
+        setInterval(actualizarCuentaRegresiva, 1000);
 
         function mostrarRespuesta(asistira, respuestaAnterior) {
             formulario.style.display = 'none';
