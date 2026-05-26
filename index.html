@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Invitación a mis 30 años!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff1d8 0%, #ffe3e9 48%, #daf5f2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 15px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        .confeti {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .confeti span {
+            position: absolute;
+            top: -12%;
+            width: 12px;
+            height: 24px;
+            border-radius: 4px;
+            background: var(--color);
+            left: var(--posicion);
+            opacity: 0.75;
+            transform: rotate(var(--giro));
+            animation: caer var(--duracion) linear infinite;
+            animation-delay: var(--retraso);
+        }
+        .tarjeta {
+            background-color: #ffffff;
+            border-radius: 26px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: aparecer 0.9s ease-out both;
+        }
+        .portada {
+            position: relative;
+            padding: 30px 18px 18px;
+            margin-bottom: 18px;
+            overflow: hidden;
+            border-radius: 21px;
+            background: radial-gradient(circle at 80% 10%, #ffe8b2, transparent 34%),
+                        linear-gradient(145deg, #ff6b6b, #ff8c72 48%, #ffba71);
+            color: #ffffff;
+        }
+        .portada::before,
+        .portada::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.17);
+            animation: burbuja 4.2s ease-in-out infinite;
+        }
+        .portada::before {
+            width: 92px;
+            height: 92px;
+            left: -28px;
+            bottom: 62px;
+        }
+        .portada::after {
+            width: 130px;
+            height: 130px;
+            right: -65px;
+            top: 55px;
+            animation-delay: -2s;
+        }
+        .brillos {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .brillos span {
+            position: absolute;
+            font-size: 1.15em;
+            animation: destello 2.3s ease-in-out infinite;
+        }
+        .brillos span:nth-child(1) {
+            top: 20px;
+            left: 22px;
+        }
+        .brillos span:nth-child(2) {
+            top: 66px;
+            right: 27px;
+            animation-delay: -1s;
+        }
+        .brillos span:nth-child(3) {
+            top: 116px;
+            left: 38px;
+            animation-delay: -1.7s;
+        }
+        .pre-titulo {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 5px;
+            font-size: 0.82em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.93;
+        }
+        h1 {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 18px;
+            color: #ffffff;
+            font-size: 2em;
+            line-height: 1.12;
+        }
+        .edad {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            width: 136px;
+            height: 136px;
+            margin: 0 0 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #ff6b6b;
+            box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.19), 0 14px 27px rgba(170, 45, 47, 0.2);
+            animation: latido 2.2s ease-in-out infinite;
+        }
+        .edad strong {
+            display: block;
+            font-size: 3.1em;
+            line-height: 0.82;
+        }
+        .edad span {
+            display: block;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .mensaje {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 18px;
+            color: #ffffff;
+            font-size: 1em;
+            line-height: 1.42;
+        }
+        .detalles {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+        .detalles p {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 77px;
+            margin: 0;
+            padding: 8px 3px;
+            border-radius: 13px;
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 0.77em;
+            line-height: 1.25;
+            backdrop-filter: blur(3px);
+        }
+        .detalles strong {
+            display: block;
+            font-size: 1.05em;
+        }
+        .icono {
+            margin: 0 0 4px;
+            display: inline-block;
+            font-size: 1.35em;
+            animation: flotar 2s ease-in-out infinite;
+        }
+        .detalles p:nth-child(2) .icono {
+            animation-delay: 0.3s;
+        }
+        .detalles p:nth-child(3) .icono {
+            animation-delay: 0.6s;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .confirmacion {
+            position: relative;
+            margin-top: 6px;
+            padding: 24px 20px 20px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #fff9f2, #fff1f5);
+            border: 1px solid rgba(255, 107, 107, 0.16);
+            box-shadow: inset 0 1px 0 #fff, 0 10px 26px rgba(255, 107, 107, 0.09);
+        }
+        .confirmacion::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ffbe76, #4ecdc4);
+        }
+        .confirmacion h3 {
+            margin: 0;
+            color: #393240;
+            font-size: 1.25em;
+        }
+        .confirmacion-subtitulo {
+            margin: 5px 0 3px;
+            color: #7d7180;
+            font-size: 0.92em;
+        }
+        .campo {
+            text-align: left;
+        }
+        .campo label {
+            display: block;
+            margin: 0 0 7px 5px;
+            color: #694e59;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .entrada-icono {
+            position: relative;
+        }
+        .entrada-icono span {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 14px 13px 43px;
+            border-radius: 13px;
+            border: 2px solid transparent;
+            background: #ffffff;
+            font-size: 1em;
+            color: #393240;
+            box-shadow: 0 2px 9px rgba(67, 37, 51, 0.06);
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.14);
+        }
+        .opciones-asistencia {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .opciones-asistencia input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .opcion {
+            display: block;
+            padding: 12px 8px;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            color: #695661;
+            background: #ffffff;
+            font-size: 0.92em;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 9px rgba(67, 37, 51, 0.06);
+            transition: border-color 0.25s, transform 0.25s, background-color 0.25s;
+        }
+        .opcion span {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 1.4em;
+        }
+        .opciones-asistencia input:checked + .opcion {
+            border-color: #ff6b6b;
+            color: #ef5350;
+            background-color: #fff0ee;
+            transform: translateY(-2px);
+        }
+        .opciones-asistencia input:focus + .opcion {
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.16);
+        }
+        .contador {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 14px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 9px rgba(67, 37, 51, 0.06);
+        }
+        .contador input {
+            width: 56px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            text-align: center;
+            box-shadow: none;
+            font-size: 1.22em;
+            font-weight: bold;
+            -moz-appearance: textfield;
+        }
+        .contador input::-webkit-outer-spin-button,
+        .contador input::-webkit-inner-spin-button {
+            margin: 0;
+            -webkit-appearance: none;
+        }
+        .boton-contador {
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border-radius: 50%;
+            background: #fff0ee;
+            color: #ff6b6b;
+            font-size: 1.4em;
+            animation: none;
+        }
+        .boton-contador:hover {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        button {
+            padding: 14px 10px;
+            border-radius: 14px;
+            border: none;
+            background-color: #4ecdc4;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: brillo 2.5s ease-in-out infinite;
+        }
+        .enviar-confirmacion {
+            margin-top: 3px;
+            background: linear-gradient(110deg, #ff6b6b, #ff9671);
+            letter-spacing: 0.2px;
+        }
+        button:hover {
+            background-color: #45b7aa;
+            transform: translateY(-2px);
+        }
+        .enviar-confirmacion:hover {
+            background: linear-gradient(110deg, #ee5253, #ff8a68);
+        }
+        #mensaje-exito {
+            display: none;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6fdf0;
+            border-radius: 5px;
+            animation: aparecer 0.55s ease-out both;
+        }
+        #estado-guardado {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+        #estado-guardado.pendiente {
+            padding: 10px;
+            color: #856404;
+            background: #fff3cd;
+            border-radius: 6px;
+        }
+        #ubicacion-confirmada {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            color: #333;
+            background-color: #fff7e8;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+        #ubicacion-confirmada strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff6b6b;
+        }
+        .boton-mapa {
+            display: block;
+            margin-top: 12px;
+            padding: 11px;
+            border-radius: 6px;
+            background-color: #ff6b6b;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .boton-mapa:hover {
+            background-color: #ee5253;
+            transform: translateY(-2px);
+        }
+        #regalos-confirmados {
+            display: none;
+            position: relative;
+            margin-top: 14px;
+            padding: 16px 12px 12px;
+            overflow: hidden;
+            border-radius: 14px;
+            color: #473847;
+            background: linear-gradient(135deg, #fff2f4, #fff7e6);
+            font-weight: normal;
+            animation: aparecer 0.65s ease-out both;
+        }
+        #regalos-confirmados::before {
+            content: "🎁";
+            position: absolute;
+            top: -4px;
+            right: 9px;
+            font-size: 2.2em;
+            opacity: 0.18;
+            animation: flotar 2s ease-in-out infinite;
+        }
+        .titulo-regalos {
+            display: block;
+            margin-bottom: 5px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .texto-regalos {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.88em;
+            color: #71616d;
+        }
+        .ideas-regalo {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .regalo {
+            padding: 11px 5px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 3px 11px rgba(99, 63, 64, 0.09);
+            font-size: 0.86em;
+            font-weight: bold;
+            animation: regaloFlota 2.5s ease-in-out infinite;
+        }
+        .regalo:nth-child(2) {
+            animation-delay: -1.25s;
+        }
+        .regalo span {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.75em;
+        }
+        .explosion {
+            position: fixed;
+            z-index: 2;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            background: var(--color);
+            pointer-events: none;
+            animation: celebrar 1s ease-out forwards;
+        }
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(35px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes latido {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06) rotate(-1deg); }
+        }
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        @keyframes brillo {
+            0%, 100% { box-shadow: 0 0 0 rgba(78, 205, 196, 0); }
+            50% { box-shadow: 0 0 18px rgba(78, 205, 196, 0.55); }
+        }
+        @keyframes caer {
+            from { transform: translateY(-10vh) rotate(var(--giro)); }
+            to { transform: translateY(115vh) rotate(calc(var(--giro) + 480deg)); }
+        }
+        @keyframes celebrar {
+            from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+        @keyframes burbuja {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.06); }
+        }
+        @keyframes destello {
+            0%, 100% { transform: rotate(0deg) scale(0.82); opacity: 0.55; }
+            50% { transform: rotate(15deg) scale(1.2); opacity: 1; }
+        }
+        @keyframes regaloFlota {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        @media (max-width: 520px) {
+            body {
+                display: block;
+                padding: 12px 10px 20px;
+            }
+            .tarjeta {
+                width: 100%;
+                max-width: none;
+                box-sizing: border-box;
+                padding: 8px;
+                border-radius: 20px;
+            }
+            .portada {
+                padding: 22px 11px 11px;
+                margin-bottom: 10px;
+                border-radius: 15px;
+            }
+            h1 {
+                margin: 0 0 12px;
+                font-size: 1.46em;
+                line-height: 1.2;
+            }
+            .pre-titulo {
+                font-size: 0.69em;
+            }
+            .edad {
+                width: 90px;
+                height: 90px;
+                margin: 0 0 12px;
+                box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.19), 0 10px 20px rgba(170, 45, 47, 0.18);
+            }
+            .edad strong {
+                font-size: 2.45em;
+            }
+            .edad span {
+                font-size: 0.77em;
+            }
+            .mensaje {
+                margin: 0 5px 12px;
+                font-size: 0.9em;
+                line-height: 1.38;
+            }
+            .detalles {
+                gap: 5px;
+            }
+            .detalles p {
+                min-height: 64px;
+                padding: 6px 2px;
+                border-radius: 10px;
+                font-size: 0.68em;
+            }
+            .icono {
+                margin-bottom: 2px;
+                font-size: 1.22em;
+            }
+            form {
+                gap: 12px;
+            }
+            .confirmacion {
+                margin-top: 0;
+                padding: 19px 12px 12px;
+                border-radius: 16px;
+            }
+            .confirmacion h3 {
+                font-size: 1.12em;
+            }
+            .confirmacion-subtitulo {
+                margin-bottom: 0;
+                font-size: 0.84em;
+            }
+            .campo label {
+                margin-bottom: 5px;
+                font-size: 0.83em;
+            }
+            input {
+                padding: 11px 11px 11px 39px;
+                border-radius: 11px;
+                font-size: 0.94em;
+            }
+            .entrada-icono span {
+                left: 12px;
+            }
+            .opciones-asistencia {
+                gap: 7px;
+            }
+            .opcion {
+                min-height: 58px;
+                padding: 8px 4px;
+                border-radius: 12px;
+                font-size: 0.84em;
+            }
+            .opcion span {
+                margin-bottom: 1px;
+                font-size: 1.27em;
+            }
+            .contador {
+                padding: 5px;
+                border-radius: 12px;
+            }
+            .boton-contador {
+                width: 38px;
+                height: 38px;
+            }
+            .contador input {
+                padding: 0;
+                font-size: 1.08em;
+            }
+            .enviar-confirmacion {
+                padding: 12px 8px;
+                border-radius: 12px;
+                font-size: 0.92em;
+            }
+            #mensaje-exito {
+                margin-top: 12px;
+                padding: 12px;
+            }
+            #regalos-confirmados {
+                padding: 13px 8px 8px;
+            }
+            .regalo {
+                padding: 9px 3px;
+                font-size: 0.8em;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="confeti" aria-hidden="true">
+        <span style="--posicion: 8%; --color: #ff6b6b; --giro: 18deg; --duracion: 7s; --retraso: -2s;"></span>
+        <span style="--posicion: 19%; --color: #feca57; --giro: -25deg; --duracion: 9s; --retraso: -6s;"></span>
+        <span style="--posicion: 32%; --color: #4ecdc4; --giro: 40deg; --duracion: 8s; --retraso: -1s;"></span>
+        <span style="--posicion: 47%; --color: #ff9ff3; --giro: -12deg; --duracion: 10s; --retraso: -7s;"></span>
+        <span style="--posicion: 62%; --color: #54a0ff; --giro: 30deg; --duracion: 7s; --retraso: -4s;"></span>
+        <span style="--posicion: 75%; --color: #ff6b6b; --giro: -32deg; --duracion: 9s; --retraso: -3s;"></span>
+        <span style="--posicion: 89%; --color: #feca57; --giro: 15deg; --duracion: 8s; --retraso: -6s;"></span>
+    </div>
+
+    <div class="tarjeta">
+        <div class="portada">
+            <div class="brillos" aria-hidden="true">
+                <span>✨</span>
+                <span>✨</span>
+                <span>✨</span>
+            </div>
+            <p class="pre-titulo">Celebremos juntos</p>
+            <h1>¡Mis 30 años!</h1>
+            <div class="edad" aria-label="Cumplo 30 años">
+                <div><strong>30</strong><span>años</span></div>
+            </div>
+            <p class="mensaje">Una noche para brindar, reír y crear recuerdos contigo.</p>
+
+            <div class="detalles">
+                <p><span class="icono">📅</span><strong>Jueves</strong>6 de Junio</p>
+                <p><span class="icono">⏰</span><strong>5:00</strong>de la tarde</p>
+                <p><span class="icono">📍</span><strong>Temuco</strong>Chile</p>
+            </div>
+        </div>
+
+        <iframe name="registro-google-sheets" title="Registro de confirmación" hidden></iframe>
+        <form class="confirmacion" id="formulario-confirmacion" method="post" target="registro-google-sheets">
+            <div>
+                <h3>Confirma tu asistencia</h3>
+                <p class="confirmacion-subtitulo">Queremos preparar todo para ti</p>
+            </div>
+
+            <div class="campo">
+                <label for="nombre">Tu nombre</label>
+                <div class="entrada-icono">
+                    <span aria-hidden="true">👤</span>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre y apellido" required>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label>¿Podrás venir?</label>
+                <div class="opciones-asistencia">
+                    <input type="radio" id="asistencia-si" name="asistencia" value="Si, asistire" required>
+                    <label class="opcion" for="asistencia-si"><span>🥳</span>¡Sí, voy!</label>
+                    <input type="radio" id="asistencia-no" name="asistencia" value="No podre asistir" required>
+                    <label class="opcion" for="asistencia-no"><span>💌</span>No podré</label>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="acompanantes">Acompañantes</label>
+                <div class="contador">
+                    <button type="button" class="boton-contador" id="restar-acompanante" aria-label="Quitar acompañante">−</button>
+                    <input type="number" id="acompanantes" name="acompanantes" min="0" max="10" value="0" readonly>
+                    <button type="button" class="boton-contador" id="sumar-acompanante" aria-label="Agregar acompañante">+</button>
+                </div>
+            </div>
+
+            <button class="enviar-confirmacion" type="submit">✨ Confirmar asistencia</button>
+        </form>
+
+        <div id="mensaje-exito">
+            <span id="texto-confirmacion">¡Gracias por responder!</span>
+            <span id="estado-guardado"></span>
+            <div id="ubicacion-confirmada">
+                <strong>📍 Ubicación de la celebración</strong>
+                Avenida Barros Arana 02158, Temuco, Chile
+                <a class="boton-mapa" href="https://www.google.com/maps/search/?api=1&amp;query=Avenida+Barros+Arana+02158%2C+Temuco%2C+Chile" target="_blank" rel="noopener noreferrer">Ver ubicación en Google Maps</a>
+            </div>
+            <div id="regalos-confirmados">
+                <span class="titulo-regalos">🎁 Ideas de regalo</span>
+                <span class="texto-regalos">Si quieres traer un detalle, estas ideas me encantarían:</span>
+                <div class="ideas-regalo">
+                    <div class="regalo"><span>🧴</span>Desodorante</div>
+                    <div class="regalo"><span>🚴</span>Artículos de ciclismo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+         * Para guardar respuestas en Google Sheets:
+         * 1. Crea y publica como aplicacion web el script de google-sheets-apps-script/Code.gs.
+         * 2. Pega abajo la URL terminada en /exec que entrega Google Apps Script.
+         */
+        const urlRegistro = 'https://script.google.com/macros/s/AKfycbxlQZq25zab99rXXPUmDmxfdO69sdSr7tU_g7Z8JI7OuIeL_EE4w_eGzlMZBv7UD21--Q/exec';
+        const acompanantes = document.getElementById('acompanantes');
+
+        document.getElementById('restar-acompanante').addEventListener('click', function() {
+            acompanantes.value = Math.max(0, Number(acompanantes.value) - 1);
+        });
+
+        document.getElementById('sumar-acompanante').addEventListener('click', function() {
+            acompanantes.value = Math.min(10, Number(acompanantes.value) + 1);
+        });
+
+        document.getElementById('formulario-confirmacion').addEventListener('submit', function(evento) {
+            evento.preventDefault();
+
+            const registroConfigurado = !urlRegistro.includes('PEGA_AQUI');
+            const asistira = document.querySelector('input[name="asistencia"]:checked').value === 'Si, asistire';
+            const textoConfirmacion = document.getElementById('texto-confirmacion');
+            const estadoGuardado = document.getElementById('estado-guardado');
+            const ubicacionConfirmada = document.getElementById('ubicacion-confirmada');
+            const regalosConfirmados = document.getElementById('regalos-confirmados');
+
+            if (registroConfigurado) {
+                this.action = urlRegistro;
+                this.submit();
+                estadoGuardado.classList.remove('pendiente');
+                estadoGuardado.textContent = 'Tu respuesta fue enviada para guardarse en la lista de invitados.';
+            } else {
+                estadoGuardado.classList.add('pendiente');
+                estadoGuardado.textContent = 'Modo de prueba: falta conectar Google Sheets para guardar esta respuesta.';
+            }
+
+            this.style.display = 'none';
+            document.getElementById('mensaje-exito').style.display = 'block';
+            if (asistira) {
+                textoConfirmacion.textContent = '¡Qué alegría que puedas venir! Aquí tienes la ubicación:';
+                ubicacionConfirmada.style.display = 'block';
+                regalosConfirmados.style.display = 'block';
+            } else {
+                textoConfirmacion.textContent = '¡Gracias por avisar! Te extrañaremos en la celebración.';
+                ubicacionConfirmada.style.display = 'none';
+                regalosConfirmados.style.display = 'none';
+            }
+
+            if (asistira) {
+                const colores = ['#ff6b6b', '#feca57', '#4ecdc4', '#54a0ff', '#ff9ff3'];
+                for (let i = 0; i < 28; i++) {
+                    const papelito = document.createElement('span');
+                    papelito.className = 'explosion';
+                    papelito.style.setProperty('--color', colores[i % colores.length]);
+                    papelito.style.setProperty('--x', `${Math.cos(i) * (70 + Math.random() * 190)}px`);
+                    papelito.style.setProperty('--y', `${Math.sin(i) * (70 + Math.random() * 190)}px`);
+                    document.body.appendChild(papelito);
+                    setTimeout(() => papelito.remove(), 1000);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
