@@ -394,6 +394,23 @@
             background: #dff7e9;
             border-radius: 6px;
         }
+        .boton-editar {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            padding: 11px;
+            border: 1px solid #4ecdc4;
+            background: #ffffff;
+            color: #269f98;
+            animation: none;
+        }
+        .boton-editar:hover {
+            background: #e9fbfa;
+        }
+        .nombre-bloqueado {
+            background: #f5f5f5;
+            color: #777;
+        }
         #ubicacion-confirmada {
             display: none;
             margin-top: 15px;
@@ -731,6 +748,7 @@
         <div id="mensaje-exito">
             <span id="texto-confirmacion">¡Gracias por responder!</span>
             <span id="estado-guardado"></span>
+            <button type="button" class="boton-editar" id="editar-respuesta">✏️ Modificar mi respuesta</button>
             <div id="ubicacion-confirmada">
                 <strong>📍 Ubicación de la celebración</strong>
                 Avenida Barros Arana 02158, Temuco, Chile
@@ -762,6 +780,10 @@
         const estadoGuardado = document.getElementById('estado-guardado');
         const ubicacionConfirmada = document.getElementById('ubicacion-confirmada');
         const regalosConfirmados = document.getElementById('regalos-confirmados');
+        const nombre = document.getElementById('nombre');
+        const botonEnviar = formulario.querySelector('.enviar-confirmacion');
+        const tituloFormulario = formulario.querySelector('h3');
+        let respuestaGuardada = null;
 
         function mostrarRespuesta(asistira, respuestaAnterior) {
             formulario.style.display = 'none';
@@ -786,7 +808,7 @@
         }
 
         try {
-            const respuestaGuardada = JSON.parse(localStorage.getItem(claveConfirmacion));
+            respuestaGuardada = JSON.parse(localStorage.getItem(claveConfirmacion));
             if (respuestaGuardada && typeof respuestaGuardada.asistira === 'boolean') {
                 mostrarRespuesta(respuestaGuardada.asistira, true);
             }
@@ -802,17 +824,42 @@
             acompanantes.value = Math.min(10, Number(acompanantes.value) + 1);
         });
 
+        document.getElementById('editar-respuesta').addEventListener('click', function() {
+            mensajeExito.style.display = 'none';
+            formulario.style.display = 'flex';
+            tituloFormulario.textContent = 'Modifica tu asistencia';
+            botonEnviar.textContent = '✨ Guardar cambios';
+
+            if (respuestaGuardada && typeof respuestaGuardada.asistira === 'boolean') {
+                const opcion = respuestaGuardada.asistira ? 'asistencia-si' : 'asistencia-no';
+                document.getElementById(opcion).checked = true;
+
+                if (respuestaGuardada.nombre) {
+                    nombre.value = respuestaGuardada.nombre;
+                    nombre.readOnly = true;
+                    nombre.classList.add('nombre-bloqueado');
+                    acompanantes.value = respuestaGuardada.acompanantes || 0;
+                }
+            }
+        });
+
         formulario.addEventListener('submit', function(evento) {
             evento.preventDefault();
 
             const registroConfigurado = !urlRegistro.includes('PEGA_AQUI');
             const asistira = document.querySelector('input[name="asistencia"]:checked').value === 'Si, asistire';
+            const datosRespuesta = {
+                nombre: nombre.value.trim(),
+                asistira: asistira,
+                acompanantes: Number(acompanantes.value)
+            };
 
             if (registroConfigurado) {
                 this.action = urlRegistro;
                 this.submit();
                 try {
-                    localStorage.setItem(claveConfirmacion, JSON.stringify({ asistira: asistira }));
+                    localStorage.setItem(claveConfirmacion, JSON.stringify(datosRespuesta));
+                    respuestaGuardada = datosRespuesta;
                 } catch (error) {
                     // La confirmacion igualmente fue enviada aunque el navegador no guarde memoria local.
                 }
